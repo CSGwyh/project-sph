@@ -2,10 +2,13 @@
   <!-- 商品分类导航 -->
   <div class="type-nav">
     <div class="container">
-      <div @mouseleave="leaveIndex">
+      <!-- 用@mouseleave来写鼠标移入移出事件 -->
+      <div @mouseleave="leaveShow" @mouseenter="enterShow">
         <h2 class="all">全部商品分类</h2>
+       <!-- 过渡动画 -->
+       <transition name="sort">
         <!-- 三级联动 -->
-        <div class="sort">
+        <div class="sort" v-show="show">
           <!-- 利用事件委派+编程式导航实现路由的跳转与传递参数 -->
           <div class="all-sort-list2" @click="goSearch">
             <div
@@ -54,6 +57,7 @@
             </div>
           </div>
         </div>
+       </transition>
       </div>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -79,13 +83,16 @@ export default {
   name: "TypeNav",
   //组件挂载完毕，可以向服务器发送请求
   mounted() {
-    //这边的$store虽然报的是any，但其实是起作用的
-    this.$store.dispatch("categoryList");
+    //当组件挂载完毕，让show属性变为false(加一个判断条件看看是不是在home组件)
+    if(this.$route.path!='/home'){
+      this.show = false;
+    }
   },
   data() {
     return {
       //储存用户鼠标移上哪一个一级分类
-      currentIndex:-1
+      currentIndex:-1,
+      show:true
     }
   },
   computed: {
@@ -107,9 +114,6 @@ export default {
       //就是由于用户行为过快，导致浏览器反应不过来。所以当前回调函数中有一些大量业务，有可能会出现卡顿现象
       this.currentIndex = index
     },50),
-    leaveIndex(){
-      this.currentIndex = -1;
-    },
     goSearch(event) {
       //最好的解决方案:编程式导航+事件委派
       //存在一些问题:事件委派，是把全部的子节点【h3，dt，dl，em】的事件委派给父亲节点
@@ -119,7 +123,7 @@ export default {
       //第一个问题:把子节点当中a标签，我加上自定义属性data-categoryname这样节点【一定是a标签】
       let element = event.target;  //这里的target意思是点击事件，返回点击的节点
       //节点中有一个属性dataset，可以获取节点的自定义属性与属性值
-      //这行框框里面的其实看不太懂
+      //这行框框里面的其实看不太懂  答:把这几个东西从dataset里面解构出来，以后可以直接用
       let { categoryname, category1id,category2id,category3id } = element.dataset;
       //如果标签身上拥有catagoryname一定是a表亲啊
       if(categoryname) {
@@ -133,10 +137,24 @@ export default {
         } else {
           query.category3Id = category3id;
         }
-        //整理完参数
+        //注意这种if的写法，反正知道括号里面写的东西存在，那么if就会执行
+       if(this.$route.params){
+        location.params = this.$route.params;
+         //动态给location添加query参数
         location.query = query;
         //路由跳转
         this.$router.push(location);
+       }
+      }
+    },
+    enterShow(){
+      this.show = true  
+    },
+    //鼠标离开“全部商品分类"时候让他消失
+     leaveShow(){
+      this.currentIndex = -1;
+      if(this.$route.path!="/home"){
+      this.show = false;
       }
     },
   },
@@ -265,6 +283,20 @@ export default {
           background: skyblue;
         }
       }
+    }
+    //过渡动画的样式
+    //过渡动画开始状态(进入)
+    .sort-enter{
+      height:0px;
+    }
+    //过渡动画结束状态(进入)
+    .sort-enter-to{
+      height:461px;
+    }
+    //定义动画时间，速率
+    .sort-enter-active{
+      overflow:hidden;//让字更跟着背景一块chulai
+      transition:all .3s linear;
     }
   }
 }

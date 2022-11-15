@@ -1,15 +1,24 @@
+<!--
+ * @Author: Yanhuang Wu
+ * @Date: 2022-10-14 10:11:41
+ * @LastEditors: Yanhuang Wu
+ * @LastEditTime: 2022-11-15 14:07:37
+ * @FilePath: \project-SPH\app\src\pages\Search\index.vue
+ * @Description: 
+ * 
+ * Copyright (c) 2022 by CSG, All Rights Reserved. 
+-->
 <template>
   <div>
-    <h1>params参数{{$route.params.keyword}}</h1>      <!--用$route来获取参数，这边的keyword是从Header的index.vue传过来的-->
-    <h2>query参数{{$route.query.k}}</h2>
+    <!-- 这是search模块 -->
+    <TypeNav/>
   </div>
 </template>
 
 <script>
 export default {
     name:'',
-    props:['keyword']
-}
+  }
 </script>
 
 <style>
